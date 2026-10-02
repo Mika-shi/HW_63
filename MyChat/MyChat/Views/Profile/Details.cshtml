@@ -1,0 +1,62 @@
+﻿@model MyChat.Models.User
+
+@{
+    ViewData["Title"] = "Профиль";
+
+    bool isMyProfile = ViewBag.IsMyProfile == true;
+}
+
+<div class="container mt-5">
+    <div class="mx-auto" style="max-width: 650px;">
+
+        <h2 class="mb-4">Профиль пользователя</h2>
+
+        <div class="card">
+            <div class="card-body">
+
+                @if (!string.IsNullOrEmpty(Model.AvatarPath))
+                {
+                    <div class="text-center mb-4">
+                        <img src="@Model.AvatarPath"
+                             alt="Аватар"
+                             style="width: 150px;
+                                    height: 150px;
+                                    object-fit: cover;
+                                    border-radius: 50%;" />
+                    </div>
+                }
+
+                <p>
+                    <strong>Имя пользователя:</strong>
+                    @Model.UserName
+                </p>
+
+                <p>
+                    <strong>Email:</strong>
+                    @Model.Email
+                </p>
+
+                <p>
+                    <strong>Дата рождения:</strong>
+                    @Model.BirthDate.ToString("dd.MM.yyyy")
+                </p>
+
+                <p>
+                    <strong>Отправлено сообщений:</strong>
+                    @Model.MessagesCount
+                </p>
+
+                @if (isMyProfile)
+                {
+                    <a asp-controller="Profile"
+                       asp-action="Edit"
+                       class="btn btn-primary">
+                        Редактировать профиль
+                    </a>
+                }
+
+            </div>
+        </div>
+
+    </div>
+</div>
