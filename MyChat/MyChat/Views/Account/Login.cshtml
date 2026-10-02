@@ -1,0 +1,85 @@
+﻿@model MyChat.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Вход";
+}
+
+<div class="container mt-5">
+    <div class="mx-auto" style="max-width: 450px;">
+
+        <h2 class="mb-4">Вход</h2>
+
+        <form asp-action="Login"
+              method="post"
+              id="loginForm">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="Login"
+                       class="form-label">
+                    Имя пользователя или Email
+                </label>
+
+                <input asp-for="Login"
+                       class="form-control"
+                       placeholder="Введите username или email" />
+
+                <span asp-validation-for="Login"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label asp-for="Password"
+                       class="form-label">
+                    Пароль
+                </label>
+
+                <div class="input-group">
+
+                    <input asp-for="Password"
+                           class="form-control"
+                           id="loginPasswordInput"
+                           placeholder="Введите пароль" />
+
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            id="toggleLoginPassword">
+                        👁
+                    </button>
+
+                </div>
+
+                <span asp-validation-for="Password"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+            <div class="form-check mb-3">
+
+                <input asp-for="RememberMe"
+                       class="form-check-input" />
+
+                <label asp-for="RememberMe"
+                       class="form-check-label">
+                    Запомнить меня
+                </label>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary w-100">
+                Войти
+            </button>
+
+        </form>
+
+    </div>
+</div>

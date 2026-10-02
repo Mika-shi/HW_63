@@ -65,3 +65,42 @@
     });
 
 });
+
+$(document).ready(function () {
+
+    $('#toggleLoginPassword').click(function () {
+
+        let passwordInput = $('#loginPasswordInput');
+
+        if (passwordInput.attr('type') === 'password') {
+            passwordInput.attr('type', 'text');
+        } else {
+            passwordInput.attr('type', 'password');
+        }
+
+    });
+
+});
+
+$(document).ready(function () {
+
+    $('.password-toggle').click(function () {
+        let button = $(this);
+        let targetId = button.data('target');
+        let input = $('#' + targetId);
+        let icon = button.find('i');
+
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+
+            icon.removeClass('bi-eye');
+            icon.addClass('bi-eye-slash');
+        } else {
+            input.attr('type', 'password');
+
+            icon.removeClass('bi-eye-slash');
+            icon.addClass('bi-eye');
+        }
+    });
+
+});

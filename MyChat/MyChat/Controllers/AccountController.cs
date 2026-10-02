@@ -162,4 +162,60 @@ public class AccountController : Controller
 
         return "Ошибка регистрации";
     }
+    
+    [HttpGet]
+    public IActionResult Login()
+    {
+        return View();
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        User? user = null;
+
+        if (model.Login.Contains("@"))
+        {
+            user = await _userManager.FindByEmailAsync(model.Login);
+        }
+        else
+        {
+            user = await _userManager.FindByNameAsync(model.Login);
+        }
+
+        if (user == null)
+        {
+            ModelState.AddModelError("", "Неверное имя пользователя, email или пароль");
+            return View(model);
+        }
+
+        Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(
+            user,
+            model.Password,
+            model.RememberMe,
+            lockoutOnFailure: false
+        );
+
+        if (result.Succeeded)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        ModelState.AddModelError("", "Неверное имя пользователя, email или пароль");
+
+        return View(model);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+
+        return RedirectToAction("Index", "Home");
+    }
 }

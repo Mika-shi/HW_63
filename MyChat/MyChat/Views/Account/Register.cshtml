@@ -85,6 +85,12 @@
                        class="form-control"
                        id="passwordInput"
                        placeholder="Введите пароль" />
+                
+                <button type="button"
+                        class="btn btn-outline-secondary password-toggle"
+                        data-target="passwordInput">
+                    <i class="bi bi-eye"></i>
+                </button>
 
                 <span asp-validation-for="Password"
                       class="text-danger">
@@ -126,6 +132,12 @@
                        class="form-control"
                        id="confirmPasswordInput"
                        placeholder="Повторите пароль" />
+                
+                <button type="button"
+                        class="btn btn-outline-secondary password-toggle"
+                        data-target="confirmPasswordInput">
+                    <i class="bi bi-eye"></i>
+                </button>
 
                 <span asp-validation-for="ConfirmPassword"
                       class="text-danger">
