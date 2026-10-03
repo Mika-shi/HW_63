@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Чат";
+}
+
+<div class="container mt-5">
+    <div class="mx-auto" style="max-width: 800px;">
+
+        <h2 class="mb-4">Чат</h2>
+
+        <div id="chatMessages" class="border rounded p-3 mb-3" style="height: 500px; overflow-y: auto;">
+        </div>
+
+        <div class="mb-2">
+            <textarea id="messageText" class="form-control" rows="3" maxlength="150" placeholder="Введите сообщение"></textarea>
+            
+            <div class="d-flex justify-content-between mt-1">
+                <small id="messageCounter" class="text-muted">0 / 150</small>
+                <small id="messageError" class="text-danger"></small>
+            </div>
+        </div>
+
+        <div id="messageError" class="text-danger mb-2"></div>
+
+        <button type="button" id="sendMessageButton" class="btn btn-primary">Отправить</button>
+
+    </div>
+</div>
