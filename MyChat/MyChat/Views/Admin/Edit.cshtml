@@ -1,0 +1,39 @@
+﻿@model MyChat.Models.User
+
+@{
+    ViewData["Title"] = "Редактирование пользователя";
+}
+
+<div class="container mt-5">
+    <div class="mx-auto" style="max-width: 500px;">
+
+        <h2 class="mb-4">Редактирование пользователя</h2>
+
+        <form asp-action="Edit" method="post">
+
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            <div class="mb-3">
+                <label class="form-label">Имя пользователя</label>
+                <input type="text" name="userName" value="@Model.UserName" class="form-control" />
+                <span class="text-danger">@Html.ValidationMessage("userName")</span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" value="@Model.Email" class="form-control" />
+                <span class="text-danger">@Html.ValidationMessage("email")</span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Дата рождения</label>
+                <input type="date" name="birthDate" value="@Model.BirthDate.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a asp-action="Users" class="btn btn-secondary">Отмена</a>
+
+        </form>
+
+    </div>
+</div>

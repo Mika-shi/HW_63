@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Создание пользователя";
+}
+
+<div class="container mt-5">
+    <div class="mx-auto" style="max-width: 500px;">
+
+        <h2 class="mb-4">Создание пользователя</h2>
+
+        <form asp-action="Create" method="post">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label class="form-label">Имя пользователя</label>
+                <input type="text" name="userName" class="form-control" />
+                <span class="text-danger">@Html.ValidationMessage("userName")</span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" />
+                <span class="text-danger">@Html.ValidationMessage("email")</span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Дата рождения</label>
+                <input type="date" name="birthDate" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Пароль</label>
+                <input type="password" name="password" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Создать</button>
+            <a asp-action="Users" class="btn btn-secondary">Отмена</a>
+
+        </form>
+
+    </div>
+</div>
