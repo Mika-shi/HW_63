@@ -124,6 +124,8 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
+            await _userManager.AddToRoleAsync(user, "user");
+            
             await _signInManager.SignInAsync(
                 user,
                 isPersistent: false
@@ -134,7 +136,7 @@ public class AccountController : Controller
                 "Home"
             );
         }
-
+        
         foreach (IdentityError error in result.Errors)
         {
             ModelState.AddModelError(

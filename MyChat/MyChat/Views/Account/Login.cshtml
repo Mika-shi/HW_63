@@ -18,7 +18,6 @@
             </div>
 
             <div class="mb-3">
-
                 <label asp-for="Login"
                        class="form-label">
                     Имя пользователя или Email
@@ -31,39 +30,33 @@
                 <span asp-validation-for="Login"
                       class="text-danger">
                 </span>
-
             </div>
 
             <div class="mb-3">
-
                 <label asp-for="Password"
                        class="form-label">
                     Пароль
                 </label>
 
                 <div class="input-group">
-
                     <input asp-for="Password"
                            class="form-control"
                            id="loginPasswordInput"
                            placeholder="Введите пароль" />
 
                     <button type="button"
-                            class="btn btn-outline-secondary"
-                            id="toggleLoginPassword">
-                        👁
+                            class="btn btn-outline-secondary password-toggle"
+                            data-target="loginPasswordInput">
+                        <i class="bi bi-eye"></i>
                     </button>
-
                 </div>
 
                 <span asp-validation-for="Password"
                       class="text-danger">
                 </span>
-
             </div>
 
             <div class="form-check mb-3">
-
                 <input asp-for="RememberMe"
                        class="form-check-input" />
 
@@ -71,7 +64,6 @@
                        class="form-check-label">
                     Запомнить меня
                 </label>
-
             </div>
 
             <button type="submit"
