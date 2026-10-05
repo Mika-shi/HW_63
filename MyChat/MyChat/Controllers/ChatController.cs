@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyChat.Data;
 using MyChat.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MyChat.Controllers;
 
@@ -12,11 +13,23 @@ public class ChatController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<User> _userManager;
+    private readonly IMemoryCache _cache;
+    
+    private class CachedMessage
+    {
+        public int Id { get; set; }
+        public string Text { get; set; } = "";
+        public DateTime CreatedOn { get; set; }
+        public string UserId { get; set; } = "";
+        public string UserName { get; set; } = "";
+        public string? AvatarPath { get; set; }
+    }
 
-    public ChatController(ApplicationDbContext context, UserManager<User> userManager)
+    public ChatController(ApplicationDbContext context, UserManager<User> userManager, IMemoryCache cache)
     {
         _context = context;
         _userManager = userManager;
+        _cache = cache;
     }
 
     [HttpGet]
@@ -29,25 +42,53 @@ public class ChatController : Controller
     public async Task<IActionResult> GetMessages()
     {
         string? currentUserId = _userManager.GetUserId(User);
+        
+        const string cacheKey = "last_30_messages";
+        
+        if (!_cache.TryGetValue(cacheKey, out List<CachedMessage>? messages))
+        {
+            messages = await _context.Messages
+                .Include(message => message.User)
+                .OrderByDescending(message => message.CreatedOn)
+                .Take(30)
+                .OrderBy(message => message.CreatedOn)
+                .AsNoTracking()
+                .Select(message => new CachedMessage
+                {
+                    Id = message.Id,
+                    Text = message.Text,
+                    CreatedOn = message.CreatedOn,
+                    UserId = message.UserId,
+                    UserName = message.User != null && message.User.UserName != null
+                        ? message.User.UserName
+                        : "Неизвестный пользователь",
+                    AvatarPath = message.User != null
+                        ? message.User.AvatarPath
+                        : null
+                }).ToListAsync();
 
-        var messages = await _context.Messages
-            .Include(message => message.User)
-            .OrderByDescending(message => message.CreatedOn)
-            .Take(30)
-            .OrderBy(message => message.CreatedOn)
-            .Select(message => new
+            _cache.Set(
+                cacheKey,
+                messages,
+                new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                }
+            );
+        }
+
+        var result =messages!.Select(message => new
             {
                 id = message.Id,
                 text = message.Text,
                 createdOn = message.CreatedOn.ToString("dd.MM.yyyy HH:mm"),
                 userId = message.UserId,
-                userName = message.User != null ? message.User.UserName : "Неизвестный пользователь",
-                avatarPath = message.User != null ? message.User.AvatarPath : null,
+                userName = message.UserName ?? "Неизвестный пользователь",
+                avatarPath = message.AvatarPath,
                 isMine = message.UserId == currentUserId
-            })
-            .ToListAsync();
+            });
 
-        return Json(messages);
+        return Json(result);
     }
     
     [HttpPost]
@@ -97,6 +138,8 @@ public class ChatController : Controller
         user.MessagesCount++;
 
         await _context.SaveChangesAsync();
+        
+        _cache.Remove("last_30_messages");
 
         return Json(new { success = true });
     }
