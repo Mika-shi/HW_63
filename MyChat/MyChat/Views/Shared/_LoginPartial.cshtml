@@ -17,7 +17,7 @@
         <li class="nav-item">
             <form asp-controller="Account" asp-action="Logout" method="post">
                 <button type="submit" class="nav-link btn btn-link text-dark">
-                    Выйти
+                    @Localizer["Logout"]
                 </button>
             </form>
         </li>
@@ -27,7 +27,7 @@
                 <a class="nav-link text-danger"
                    asp-controller="Admin"
                    asp-action="Users">
-                    Админ-панель
+                    @Localizer["AdminPanel"]
                 </a>
             </li>
         }
@@ -36,13 +36,13 @@
     {
         <li class="nav-item">
             <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">
-                Регистрация
+                @Localizer["Register"]
             </a>
         </li>
 
         <li class="nav-item">
             <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">
-                Вход
+                @Localizer["Login"]
             </a>
         </li>
     }

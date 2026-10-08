@@ -1,13 +1,13 @@
 ﻿@model MyChat.ViewModels.RegisterViewModel
 
 @{
-    ViewData["Title"] = "Регистрация";
+    ViewData["Title"] = Localizer["Title"];
 }
 
 <div class="container mt-5">
     <div class="mx-auto" style="max-width: 500px;">
 
-        <h2 class="mb-4">Регистрация</h2>
+        <h2 class="mb-4">>@Localizer["Title"]</h2>
 
         <form asp-action="Register"
               method="post"
@@ -21,12 +21,12 @@
             <div class="mb-3">
                 <label asp-for="UserName"
                        class="form-label">
-                    Имя пользователя
+                    @Localizer["Username"]
                 </label>
 
                 <input asp-for="UserName"
                        class="form-control"
-                       placeholder="Введите имя пользователя" />
+                       placeholder="@Localizer["UsernamePlaceholder"]" />
 
                 <span asp-validation-for="UserName"
                       class="text-danger">
@@ -36,12 +36,12 @@
             <div class="mb-3">
                 <label asp-for="Email"
                        class="form-label">
-                    Email
+                    @Localizer["Email"]
                 </label>
 
                 <input asp-for="Email"
                        class="form-control"
-                       placeholder="Введите email" />
+                       placeholder="@Localizer["EmailPlaceholder"]" />
 
                 <span asp-validation-for="Email"
                       class="text-danger">
@@ -51,7 +51,7 @@
             <div class="mb-3">
                 <label asp-for="BirthDate"
                        class="form-label">
-                    Дата рождения
+                    @Localizer["BirthDate"]
                 </label>
 
                 <input asp-for="BirthDate"
@@ -66,7 +66,7 @@
             <div class="mb-3">
                 <label asp-for="Avatar"
                        class="form-label">
-                    Аватар
+                    @Localizer["Avatar"]
                 </label>
 
                 <input asp-for="Avatar"
@@ -78,14 +78,14 @@
             <div class="mb-3">
                 <label asp-for="Password"
                        class="form-label">
-                    Пароль
+                    @Localizer["Password"]
                 </label>
 
                 <div class="input-group">
                     <input asp-for="Password"
                            class="form-control"
                            id="passwordInput"
-                           placeholder="Введите пароль" />
+                           placeholder="@Localizer["PasswordPlaceholder"]" />
 
                     <button type="button"
                             class="btn btn-outline-secondary password-toggle"
@@ -100,19 +100,19 @@
 
                 <div id="passwordRules" class="mt-2">
                     <div id="ruleLength" class="text-danger">
-                        Минимум 6 символов
+                        @Localizer["RuleLength"]
                     </div>
 
                     <div id="ruleUpper" class="text-danger">
-                        Минимум 1 заглавная буква
+                        @Localizer["RuleUpper"]
                     </div>
 
                     <div id="ruleLower" class="text-danger">
-                        Минимум 1 строчная буква
+                        @Localizer["RuleLower"]
                     </div>
 
                     <div id="ruleDigit" class="text-danger">
-                        Минимум 1 цифра
+                        @Localizer["RuleDigit"]
                     </div>
                 </div>
             </div>
@@ -120,14 +120,14 @@
             <div class="mb-3">
                 <label asp-for="ConfirmPassword"
                        class="form-label">
-                    Подтвердите пароль
+                    @Localizer["ConfirmPassword"]
                 </label>
 
                 <div class="input-group">
                     <input asp-for="ConfirmPassword"
                            class="form-control"
                            id="confirmPasswordInput"
-                           placeholder="Повторите пароль" />
+                           placeholder="@Localizer["ConfirmPasswordPlaceholder"]" />
 
                     <button type="button"
                             class="btn btn-outline-secondary password-toggle"
@@ -147,7 +147,7 @@
 
             <button type="submit"
                     class="btn btn-primary w-100">
-                Зарегистрироваться
+                @Localizer["RegisterButton"]
             </button>
 
         </form>

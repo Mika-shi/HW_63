@@ -1,7 +1,7 @@
 ﻿@model MyChat.Models.User
 
 @{
-    ViewData["Title"] = "Профиль";
+    ViewData["Title"] = Localizer["Title"];
 
     bool isMyProfile = ViewBag.IsMyProfile == true;
 }
@@ -9,7 +9,7 @@
 <div class="container mt-5">
     <div class="mx-auto" style="max-width: 650px;">
 
-        <h2 class="mb-4">Профиль пользователя</h2>
+        <h2 class="mb-4">@Localizer["UserProfile"]</h2>
 
         <div class="card">
             <div class="card-body">
@@ -18,7 +18,7 @@
                 {
                     <div class="text-center mb-4">
                         <img src="@Model.AvatarPath"
-                             alt="Аватар"
+                             alt="@Localizer["AvatarAlt"]"
                              style="width: 150px;
                                     height: 150px;
                                     object-fit: cover;
@@ -27,22 +27,22 @@
                 }
 
                 <p>
-                    <strong>Имя пользователя:</strong>
+                    <strong>@Localizer["Username"]</strong>
                     @Model.UserName
                 </p>
 
                 <p>
-                    <strong>Email:</strong>
+                    <strong>@Localizer["Email"]</strong>
                     @Model.Email
                 </p>
 
                 <p>
-                    <strong>Дата рождения:</strong>
+                    <strong>@Localizer["BirthDate"]</strong>
                     @Model.BirthDate.ToString("dd.MM.yyyy")
                 </p>
 
                 <p>
-                    <strong>Отправлено сообщений:</strong>
+                    <strong>@Localizer["MessagesCount"]</strong>
                     @Model.MessagesCount
                 </p>
 
@@ -51,7 +51,7 @@
                     <a asp-controller="Profile"
                        asp-action="Edit"
                        class="btn btn-primary">
-                        Редактировать профиль
+                        @Localizer["EditProfile"]
                     </a>
                 }
 

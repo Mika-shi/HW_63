@@ -1,13 +1,13 @@
 ﻿@model MyChat.ViewModels.LoginViewModel
 
 @{
-    ViewData["Title"] = "Вход";
+    ViewData["Title"] = Localizer["Title"];
 }
 
 <div class="container mt-5">
     <div class="mx-auto" style="max-width: 450px;">
 
-        <h2 class="mb-4">Вход</h2>
+        <h2 class="mb-4">@Localizer["Title"]</h2>
 
         <form asp-action="Login"
               method="post"
@@ -20,12 +20,12 @@
             <div class="mb-3">
                 <label asp-for="Login"
                        class="form-label">
-                    Имя пользователя или Email
+                    @Localizer["UsernameOrEmail"]
                 </label>
 
                 <input asp-for="Login"
                        class="form-control"
-                       placeholder="Введите username или email" />
+                       placeholder="@Localizer["LoginPlaceholder"]" />
 
                 <span asp-validation-for="Login"
                       class="text-danger">
@@ -42,7 +42,7 @@
                     <input asp-for="Password"
                            class="form-control"
                            id="loginPasswordInput"
-                           placeholder="Введите пароль" />
+                           placeholder="@Localizer["PasswordPlaceholder"]" />
 
                     <button type="button"
                             class="btn btn-outline-secondary password-toggle"
@@ -62,13 +62,13 @@
 
                 <label asp-for="RememberMe"
                        class="form-check-label">
-                    Запомнить меня
+                    @Localizer["RememberMe"]
                 </label>
             </div>
 
             <button type="submit"
                     class="btn btn-primary w-100">
-                Войти
+                @Localizer["LoginButton"]
             </button>
 
         </form>

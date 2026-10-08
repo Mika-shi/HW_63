@@ -1,5 +1,7 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using System.Globalization
+<!DOCTYPE html>
+<html lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
+
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -17,7 +19,7 @@
 
             <a class="navbar-brand" asp-controller="Chat" asp-action="Index">MyChat</a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="@Localizer["ToggleNavigation"]">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -27,13 +29,37 @@
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Chat" asp-action="Index">Чат</a>
+                            <a class="nav-link text-dark" asp-controller="Chat" asp-action="Index"> @Localizer["Chat"]</a>
                         </li>
                     }
                 </ul>
+                
+                <div class="d-flex align-items-center">
 
-                <partial name="_LoginPartial" />
+                    <div class="me-3">
+                        <a asp-controller="Home"
+                           asp-action="SetCulture"
+                           asp-route-culture="ru"
+                           asp-route-returnUrl="@Context.Request.Path"
+                           class="text-decoration-none">
+                            RU
+                        </a>
 
+                        <span class="mx-1">|</span>
+
+                        <a asp-controller="Home"
+                           asp-action="SetCulture"
+                           asp-route-culture="en"
+                           asp-route-returnUrl="@Context.Request.Path"
+                           class="text-decoration-none">
+                            EN
+                        </a>
+                    </div>
+
+                    <partial name="_LoginPartial"/>
+
+                </div>
+                
             </div>
         </div>
     </nav>
@@ -46,7 +72,7 @@
 
 <footer class="border-top footer text-muted">
     <div class="container">
-        &copy; 2026 - MyChat - HW_63 - ;) 
+        &copy; 2026 - MyChat - HW_63 - ;)
     </div>
 </footer>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
