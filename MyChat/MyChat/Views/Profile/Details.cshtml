@@ -8,6 +8,13 @@
 
 <div class="container mt-5">
     <div class="mx-auto" style="max-width: 650px;">
+        
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
 
         <h2 class="mb-4">@Localizer["UserProfile"]</h2>
 
@@ -22,7 +29,7 @@
                              style="width: 150px;
                                     height: 150px;
                                     object-fit: cover;
-                                    border-radius: 50%;" />
+                                    border-radius: 50%;"/>
                     </div>
                 }
 
@@ -48,6 +55,28 @@
 
                 @if (isMyProfile)
                 {
+                    @if (!Model.EmailConfirmed)
+                    {
+                        <div class="alert alert-warning mt-3">
+                            Email не подтверждён.
+
+                            <form asp-controller="Profile" asp-action="SendConfirmationEmail"method="post"class="mt-2">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"class="btn btn-warning">
+                                    Подтвердить Email
+                                </button>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success mt-3">
+                            Email подтверждён.
+                        </div>
+                    }
+
                     <a asp-controller="Profile"
                        asp-action="Edit"
                        class="btn btn-primary">

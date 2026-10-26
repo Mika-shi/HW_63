@@ -221,8 +221,7 @@ public class ProfileController : Controller
         }
 
         string profileLink = Url.Action(
-            "Details",
-            "Profile",
+            "Details", "Profile",
             new { id = user.Id },
             Request.Scheme
         )!;
@@ -236,10 +235,52 @@ public class ProfileController : Controller
             $"<p><a href=\"{profileLink}\">Перейти в профиль</a></p>";
 
         await _emailService.SendEmailAsync(
-            user.Email!,
-            "Ваши данные MyChat",
-            message
+            user.Email!, "Ваши данные MyChat", message
         );
+
+        return RedirectToAction("Details");
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendConfirmationEmail()
+    {
+        User? user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        if (user.EmailConfirmed)
+        {
+            return RedirectToAction("Details");
+        }
+
+        string token =
+            await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+        string confirmationLink = Url.Action(
+            "ConfirmEmail", "Account",
+            new
+            {
+                userId = user.Id,
+                token = token
+            },
+            Request.Scheme
+        )!;
+
+        string message =
+            $"<h2>Подтверждение Email</h2>" +
+            $"<p>Здравствуйте, {user.UserName}!</p>" +
+            $"<p>Для подтверждения вашей электронной почты нажмите на ссылку:</p>" +
+            $"<p><a href=\"{confirmationLink}\">Подтвердить Email</a></p>";
+
+        await _emailService.SendEmailAsync(
+            user.Email!, "Подтверждение Email в MyChat", message
+        );
+        
+        TempData["SuccessMessage"] = "Письмо отправлено. Проверьте вашу почту.";
 
         return RedirectToAction("Details");
     }

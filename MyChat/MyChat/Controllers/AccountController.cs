@@ -131,19 +131,35 @@ public class AccountController : Controller
             await _userManager.AddToRoleAsync(user, "user");
 
             await _signInManager.SignInAsync(user, isPersistent: false);
+            
+            string profileLink = Url.Action(
+                "Details", "Profile",
+                new { id = user.Id },
+                Request.Scheme
+            )!;
 
-            string profileLink = Url.Action("Details", "Profile", new { id = user.Id }, Request.Scheme)!;
+            string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            string confirmationLink = Url.Action(
+                "ConfirmEmail", "Account",
+                new
+                {
+                    userId = user.Id,
+                    token = token
+                },
+                Request.Scheme
+            )!;
 
             string message =
                 $"<h2>Добро пожаловать в MyChat!</h2>" +
                 $"<p>Ваш логин: <b>{user.UserName}</b></p>" +
-                $"<p><a href=\"{profileLink}\">Перейти в профиль</a></p>";
+                $"<p><a href=\"{profileLink}\">Перейти в профиль</a></p>" +
+                $"<p><a href=\"{confirmationLink}\">Подтвердить Email</a></p>";
 
             await _emailService.SendEmailAsync(user.Email!, "Добро пожаловать в MyChat", message);
 
             return RedirectToAction(
-                "Index",
-                "Home"
+                "Index", "Home"
             );
         }
         
@@ -229,5 +245,28 @@ public class AccountController : Controller
         await _signInManager.SignOutAsync();
 
         return RedirectToAction("Login", "Account");
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> ConfirmEmail(string userId, string token)
+    {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+        {
+            return BadRequest();
+        }
+
+        User? user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        IdentityResult result =
+            await _userManager.ConfirmEmailAsync(user, token);
+
+        ViewBag.Success = result.Succeeded;
+
+        return View();
     }
 }

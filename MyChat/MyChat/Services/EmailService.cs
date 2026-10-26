@@ -9,7 +9,7 @@ public class EmailService
     {
         MimeMessage emailMessage = new MimeMessage();
 
-        emailMessage.From.Add(new MailboxAddress("MyChat", "ayperiaidarova@gmail.com"));
+        emailMessage.From.Add(new MailboxAddress("MyChat", "example@gmail.com"));
         emailMessage.To.Add(new MailboxAddress("", email));
         emailMessage.Subject = subject;
 
@@ -23,8 +23,8 @@ public class EmailService
         await client.ConnectAsync("smtp.gmail.com", 465, true);
 
         await client.AuthenticateAsync(
-            "ayperiaidarova@gmail.com",
-            "mend iiag jsgg zshz"
+            "example@gmail.com",
+            "app_password"
         );
 
         await client.SendAsync(emailMessage);

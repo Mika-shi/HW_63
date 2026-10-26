@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Подтверждение Email";
+}
+
+<div class="container mt-5">
+    <div class="mx-auto" style="max-width: 600px;">
+
+        @if (ViewBag.Success == true)
+        {
+            <div class="alert alert-success">
+                <h4>Email успешно подтверждён!</h4>
+                <p>Теперь ваш почтовый адрес подтверждён.</p>
+
+                <a asp-controller="Profile" asp-action="Details"
+                   class="btn btn-primary">
+                    Перейти в профиль
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger">
+                Не удалось подтвердить Email.
+                Возможно, ссылка недействительна.
+            </div>
+        }
+
+    </div>
+</div>
