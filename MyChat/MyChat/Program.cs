@@ -4,6 +4,7 @@ using MyChat.Data;
 using MyChat.Models;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using MyChat.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddScoped<EmailService>();
 
 builder.Services.AddDefaultIdentity<User>(options =>
 {
@@ -41,6 +43,8 @@ builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;
 });
+
+builder.Services.AddScoped<EmailService>();
 
 var app = builder.Build();
 

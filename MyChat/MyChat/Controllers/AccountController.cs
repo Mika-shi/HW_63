@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyChat.Models;
+using MyChat.Services;
 using MyChat.ViewModels;
 
 namespace MyChat.Controllers;
@@ -10,15 +11,18 @@ public class AccountController : Controller
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IWebHostEnvironment _environment;
+    private readonly EmailService _emailService;
 
     public AccountController(
         UserManager<User> userManager,
         SignInManager<User> signInManager,
-        IWebHostEnvironment environment)
+        IWebHostEnvironment environment,
+        EmailService emailService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _environment = environment;
+        _emailService = emailService;
     }
 
     [HttpGet]
@@ -125,11 +129,17 @@ public class AccountController : Controller
         if (result.Succeeded)
         {
             await _userManager.AddToRoleAsync(user, "user");
-            
-            await _signInManager.SignInAsync(
-                user,
-                isPersistent: false
-            );
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            string profileLink = Url.Action("Details", "Profile", new { id = user.Id }, Request.Scheme)!;
+
+            string message =
+                $"<h2>Добро пожаловать в MyChat!</h2>" +
+                $"<p>Ваш логин: <b>{user.UserName}</b></p>" +
+                $"<p><a href=\"{profileLink}\">Перейти в профиль</a></p>";
+
+            await _emailService.SendEmailAsync(user.Email!, "Добро пожаловать в MyChat", message);
 
             return RedirectToAction(
                 "Index",

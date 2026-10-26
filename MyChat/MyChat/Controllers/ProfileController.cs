@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyChat.Models;
+using MyChat.Services;
 
 namespace MyChat.Controllers;
 
@@ -10,13 +11,16 @@ public class ProfileController : Controller
 {
     private readonly UserManager<User> _userManager;
     private readonly IWebHostEnvironment _environment;
+    private readonly EmailService _emailService;
 
     public ProfileController(
         UserManager<User> userManager,
-        IWebHostEnvironment environment)
+        IWebHostEnvironment environment, 
+        EmailService emailService)
     {
         _userManager = userManager;
         _environment = environment;
+        _emailService = emailService;
     }
 
     [HttpGet]
@@ -59,6 +63,7 @@ public class ProfileController : Controller
     }
 
     [HttpPost]
+    [HttpPost]
     public async Task<IActionResult> Edit(
         string userName,
         string email,
@@ -73,76 +78,168 @@ public class ProfileController : Controller
         }
 
         User? userWithSameName =
-            await _userManager.FindByNameAsync(userName);
+        await _userManager.FindByNameAsync(userName);
 
-        if (userWithSameName != null &&
-            userWithSameName.Id != user.Id)
+    if (userWithSameName != null &&
+        userWithSameName.Id != user.Id)
+    {
+        ModelState.AddModelError(
+            "userName", "Пользователь с таким именем уже существует"
+        );
+    }
+
+    User? userWithSameEmail =
+        await _userManager.FindByEmailAsync(email);
+
+    if (userWithSameEmail != null &&
+        userWithSameEmail.Id != user.Id)
+    {
+        ModelState.AddModelError(
+            "email", "Пользователь с таким email уже существует"
+        );
+    }
+
+    DateTime today = DateTime.Today;
+    int age = today.Year - birthDate.Year;
+
+    if (birthDate.Date > today.AddYears(-age))
+    {
+        age--;
+    }
+
+    if (age < 18)
+    {
+        ModelState.AddModelError(
+            "birthDate", "Пользователь должен быть старше 18 лет"
+        );
+    }
+
+    if (!ModelState.IsValid)
+    {
+        return View(user);
+    }
+
+    string? oldUserName = user.UserName;
+    string? oldEmail = user.Email;
+    DateTime oldBirthDate = user.BirthDate;
+    string? oldAvatarPath = user.AvatarPath;
+
+    if (avatar != null)
+    {
+        string uploadsFolder =
+            Path.Combine(_environment.WebRootPath, "uploads");
+
+        Directory.CreateDirectory(uploadsFolder);
+
+        string fileName =
+            Guid.NewGuid() + Path.GetExtension(avatar.FileName);
+
+        string filePath =
+            Path.Combine(uploadsFolder, fileName);
+
+        using FileStream stream =
+            new FileStream(filePath, FileMode.Create);
+
+        await avatar.CopyToAsync(stream);
+
+        user.AvatarPath = "/uploads/" + fileName;
+    }
+
+    user.UserName = userName;
+    user.Email = email;
+    user.BirthDate = birthDate;
+
+    IdentityResult result = await _userManager.UpdateAsync(user);
+
+    if (!result.Succeeded)
+    {
+        foreach (IdentityError error in result.Errors)
         {
-            ModelState.AddModelError(
-                "userName",
-                "Пользователь с таким именем уже существует"
-            );
+            ModelState.AddModelError("", error.Description);
         }
 
-        User? userWithSameEmail =
-            await _userManager.FindByEmailAsync(email);
+        return View(user);
+    }
 
-        if (userWithSameEmail != null &&
-            userWithSameEmail.Id != user.Id)
+    List<string> changes = new List<string>();
+
+    if (oldUserName != user.UserName)
+    {
+        changes.Add(
+            $"Имя пользователя: <b>{oldUserName}</b> → <b>{user.UserName}</b>"
+        );
+    }
+
+    if (oldEmail != user.Email)
+    {
+        changes.Add(
+            $"Email: <b>{oldEmail}</b> → <b>{user.Email}</b>"
+        );
+    }
+
+    if (oldBirthDate != user.BirthDate)
+    {
+        changes.Add(
+            $"Дата рождения: <b>{oldBirthDate:dd.MM.yyyy}</b> → <b>{user.BirthDate:dd.MM.yyyy}</b>"
+        );
+    }
+
+    if (oldAvatarPath != user.AvatarPath)
+    {
+        changes.Add("Аватар профиля был изменён");
+    }
+
+    if (changes.Count > 0)
+    {
+        string changesText = string.Join("<br>", changes);
+
+        string message =
+            $"<h2>Данные профиля изменены</h2>" +
+            $"<p>Здравствуйте, {user.UserName}!</p>" +
+            $"<p>В вашем профиле были изменены следующие данные:</p>" +
+            $"<p>{changesText}</p>";
+
+        await _emailService.SendEmailAsync(
+            user.Email!,
+            "Изменение данных профиля",
+            message
+        );
+    }
+
+    return RedirectToAction("Details");
+}
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendMyData()
+    {
+        User? user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
         {
-            ModelState.AddModelError(
-                "email",
-                "Пользователь с таким email уже существует"
-            );
+            return NotFound();
         }
 
-        DateTime today = DateTime.Today;
-        int age = today.Year - birthDate.Year;
+        string profileLink = Url.Action(
+            "Details",
+            "Profile",
+            new { id = user.Id },
+            Request.Scheme
+        )!;
 
-        if (birthDate.Date > today.AddYears(-age))
-        {
-            age--;
-        }
+        string message =
+            $"<h2>Ваши данные MyChat</h2>" +
+            $"<p><b>Имя пользователя:</b> {user.UserName}</p>" +
+            $"<p><b>Email:</b> {user.Email}</p>" +
+            $"<p><b>Дата рождения:</b> {user.BirthDate:dd.MM.yyyy}</p>" +
+            $"<p><b>Количество отправленных сообщений:</b> {user.MessagesCount}</p>" +
+            $"<p><a href=\"{profileLink}\">Перейти в профиль</a></p>";
 
-        if (age < 18)
-        {
-            ModelState.AddModelError(
-                "birthDate",
-                "Пользователь должен быть старше 18 лет"
-            );
-        }
-
-        if (!ModelState.IsValid)
-        {
-            return View(user);
-        }
-
-        if (avatar != null)
-        {
-            string uploadsFolder =
-                Path.Combine(_environment.WebRootPath, "uploads");
-
-            Directory.CreateDirectory(uploadsFolder);
-
-            string fileName =
-                Guid.NewGuid() + Path.GetExtension(avatar.FileName);
-
-            string filePath =
-                Path.Combine(uploadsFolder, fileName);
-
-            using FileStream stream =
-                new FileStream(filePath, FileMode.Create);
-
-            await avatar.CopyToAsync(stream);
-
-            user.AvatarPath = "/uploads/" + fileName;
-        }
-
-        user.UserName = userName;
-        user.Email = email;
-        user.BirthDate = birthDate;
-
-        await _userManager.UpdateAsync(user);
+        await _emailService.SendEmailAsync(
+            user.Email!,
+            "Ваши данные MyChat",
+            message
+        );
 
         return RedirectToAction("Details");
     }

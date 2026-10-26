@@ -53,6 +53,17 @@
                        class="btn btn-primary">
                         @Localizer["EditProfile"]
                     </a>
+
+                    <form asp-controller="Profile"
+                          asp-action="SendMyData"
+                          method="post"
+                          class="d-inline">
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit" class="btn btn-outline-primary">
+                            Отправить мои данные на Email
+                        </button>
+                    </form>
                 }
 
             </div>
